@@ -1,0 +1,74 @@
+apiVersion: veydeck.io/v1alpha1
+kind: ComposeSuite
+metadata:
+  suiteId: veydeck.host-scanner
+  slug: host-scanner
+  version: 0.1.0-alpha.1
+  name: 主机扫描
+  summary: 快速扫描指定 IPv4 网段，发现在线主机并查看常见端口的响应情况，适合用于资产发现和网络连通性确认。
+  icon: assets/suite-icon.png
+  minVeydeckVersion: 0.1.0-alpha.1
+  category: tools
+
+compatibility:
+  platformContractVersion: 1
+
+runtime:
+  type: compose
+  composeFile: compose.yaml
+  projectNameTemplate: veydeck-{slug}
+  network:
+    name: veydeck-suite-network
+    external: true
+  agent:
+    services:
+      - veydeck-host-scanner
+    capabilities:
+      - operation-logs.write
+
+services:
+  - name: veydeck-host-scanner
+    role: web
+    health:
+      type: http
+      path: /health
+      port: 8080
+
+appEntries:
+  - id: main
+    title: 主机扫描
+    type: proxied_web
+    service: veydeck-host-scanner
+    port: 8080
+    path: /
+    window:
+      width: 1180
+      height: 760
+      minWidth: 900
+      minHeight: 620
+
+i18n:
+  defaultLocale: zh-CN
+  # 这里只覆盖套件中心、应用库和桌面入口的展示文案。
+  locales:
+    en-US:
+      metadata:
+        name: Host Scanner
+        summary: Scan IPv4 networks, discover live hosts, and inspect common service ports.
+      appEntries:
+        main:
+          title: Host Scanner
+
+permissions:
+  network:
+    outbound: true
+    icmp: true
+  volumes:
+    named: true
+    hostPaths: []
+  dangerous:
+    privileged: false
+    hostNetwork: false
+    dockerSocket: false
+    capAdd:
+      - NET_RAW

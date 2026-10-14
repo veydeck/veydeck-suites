@@ -1,0 +1,130 @@
+name: Publish Suite Packages
+
+run-name: "${{ inputs.suite }} .vsp"
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Suite package to publish
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - host-scanner
+          - packet
+          - protocol-simulation
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.suites.outputs.suites }}
+    steps:
+      - name: Resolve suites
+        id: suites
+        env:
+          RELEASE_SUITE: ${{ inputs.suite }}
+        shell: bash
+        run: |
+          case "$RELEASE_SUITE" in
+            all)
+              echo 'suites=["host-scanner","packet","protocol-simulation"]' >> "$GITHUB_OUTPUT"
+              ;;
+            host-scanner|packet|protocol-simulation)
+              echo "suites=[\"$RELEASE_SUITE\"]" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported suite: $RELEASE_SUITE"
+              exit 1
+              ;;
+          esac
+
+  publish:
+    needs: resolve
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJson(needs.resolve.outputs.suites) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Resolve suite package
+        id: suite
+        env:
+          RELEASE_SUITE: ${{ matrix.suite }}
+        shell: bash
+        run: |
+          case "$RELEASE_SUITE" in
+            host-scanner)
+              SUITE_DIR="suites/veydeck.host-scanner"
+              ;;
+            packet)
+              SUITE_DIR="suites/veydeck.packet"
+              ;;
+            protocol-simulation)
+              SUITE_DIR="suites/veydeck.protocol-simulation"
+              ;;
+            *)
+              echo "Unsupported suite: $RELEASE_SUITE"
+              exit 1
+              ;;
+          esac
+
+          SUITE_FILE="$SUITE_DIR/suite.yaml"
+
+          if [ ! -f "$SUITE_FILE" ]; then
+            echo "suite.yaml not found: $SUITE_FILE"
+            exit 1
+          fi
+
+          SUITE_ID="$(grep -E '^[[:space:]]*suiteId:' "$SUITE_FILE" | head -n 1 | awk '{print $2}' | tr -d '\r"')"
+          SUITE_VERSION="$(grep -E '^[[:space:]]*version:' "$SUITE_FILE" | head -n 1 | awk '{print $2}' | tr -d '\r"')"
+
+          if [ -z "$SUITE_ID" ] || [ -z "$SUITE_VERSION" ]; then
+            echo "Could not parse suiteId or version from $SUITE_FILE"
+            exit 1
+          fi
+
+          echo "suite_dir=$SUITE_DIR" >> "$GITHUB_OUTPUT"
+          echo "suite_id=$SUITE_ID" >> "$GITHUB_OUTPUT"
+          echo "tag=$SUITE_ID-$SUITE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "release_name=$SUITE_ID $SUITE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "asset=dist/$SUITE_ID-$SUITE_VERSION.vsp" >> "$GITHUB_OUTPUT"
+
+      - name: Reject existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.suite.outputs.tag }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release already exists: $RELEASE_TAG"
+            exit 1
+          fi
+
+      - name: Package suite
+        run: ./scripts/package.sh "${{ steps.suite.outputs.suite_dir }}"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.suite.outputs.tag }}
+          RELEASE_NAME: ${{ steps.suite.outputs.release_name }}
+          RELEASE_ASSET: ${{ steps.suite.outputs.asset }}
+        shell: bash
+        run: |
+          if [ ! -f "$RELEASE_ASSET" ]; then
+            echo "Release asset not found: $RELEASE_ASSET"
+            exit 1
+          fi
+
+          gh release create "$RELEASE_TAG" "$RELEASE_ASSET" \
+            --title "$RELEASE_NAME" \
+            --notes "Veydeck suite package: $RELEASE_NAME"

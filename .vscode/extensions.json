@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "Vue.volar",
+    "oxc.oxc-vscode",
+    "ms-azuretools.vscode-containers",
+    "rust-lang.rust-analyzer"
+  ]
+}

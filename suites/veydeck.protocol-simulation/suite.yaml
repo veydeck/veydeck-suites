@@ -1,0 +1,74 @@
+apiVersion: veydeck.io/v1alpha1
+kind: ComposeSuite
+metadata:
+  suiteId: veydeck.protocol-simulation
+  slug: protocol-simulation
+  version: 0.1.0-alpha.1
+  name: 协议仿真
+  summary: 通过受控多端点工作负载部署 19 种协议仿真实例，并集中查看审计事件与整实例抓包。
+  icon: assets/suite-icon.png
+  minVeydeckVersion: 0.1.0-alpha.1
+  category: tools
+
+compatibility:
+  platformContractVersion: 1
+
+runtime:
+  type: compose
+  composeFile: compose.yaml
+  projectNameTemplate: veydeck-{slug}
+  images:
+    - veydeck/protocol-simulation-engine:0.1.0-alpha.1
+  network:
+    name: veydeck-suite-network
+    external: true
+  agent:
+    services:
+      - veydeck-protocol-simulation
+    capabilities:
+      - workloads.manage
+      - captures.manage
+      - operation-logs.write
+
+services:
+  - name: veydeck-protocol-simulation
+    role: web
+    health:
+      type: http
+      path: /health
+      port: 8080
+
+appEntries:
+  - id: main
+    title: 协议仿真
+    type: proxied_web
+    service: veydeck-protocol-simulation
+    port: 8080
+    path: /
+    window:
+      width: 1200
+      height: 780
+      minWidth: 960
+      minHeight: 640
+
+i18n:
+  defaultLocale: zh-CN
+  locales:
+    en-US:
+      metadata:
+        name: Protocol Simulation
+        summary: Deploy controlled multi-endpoint simulations for 19 protocols with audit events and whole-workload capture.
+      appEntries:
+        main:
+          title: Protocol Simulation
+
+permissions:
+  network:
+    outbound: true
+  volumes:
+    named: true
+    hostPaths: []
+  dangerous:
+    privileged: false
+    hostNetwork: false
+    dockerSocket: false

@@ -1,0 +1,32 @@
+services:
+  veydeck-packet:
+    image: veydeck/packet:0.1.0-alpha.1
+    container_name: veydeck-packet
+    restart: unless-stopped
+    labels:
+      veydeck.owner: suite
+      veydeck.suite.id: veydeck.packet
+      veydeck.service.role: web
+    expose:
+      - "8080"
+    networks:
+      - veydeck-suite-network
+    volumes:
+      - veydeck-packet-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  veydeck-packet-data:
+    name: veydeck-packet-data
+    labels:
+      veydeck.owner: suite
+
+networks:
+  veydeck-suite-network:
+    external: true
+    name: veydeck-suite-network

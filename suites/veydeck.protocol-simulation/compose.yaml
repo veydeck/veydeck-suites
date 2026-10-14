@@ -1,0 +1,39 @@
+services:
+  veydeck-protocol-simulation:
+    image: veydeck/protocol-simulation:0.1.0-alpha.1
+    container_name: veydeck-protocol-simulation
+    init: true
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      VEYDECK_SUITE_DATA_DIR: /data
+      VEYDECK_FRONTEND_DIR: /app/public
+      VEYDECK_SIM_ENGINE_IMAGE: veydeck/protocol-simulation-engine:0.1.0-alpha.1
+      VEYDECK_SIM_CALLBACK_URL: http://veydeck-protocol-simulation:8080/internal/events
+    labels:
+      veydeck.owner: suite
+      veydeck.suite.id: veydeck.protocol-simulation
+      veydeck.service.role: web
+    expose:
+      - "8080"
+    networks:
+      - veydeck-suite-network
+    volumes:
+      - veydeck-protocol-simulation-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  veydeck-protocol-simulation-data:
+    name: veydeck-protocol-simulation-data
+    labels:
+      veydeck.owner: suite
+
+networks:
+  veydeck-suite-network:
+    external: true
+    name: veydeck-suite-network

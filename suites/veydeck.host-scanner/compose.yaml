@@ -1,0 +1,36 @@
+services:
+  veydeck-host-scanner:
+    image: veydeck/host-scanner:0.1.0-alpha.1
+    container_name: veydeck-host-scanner
+    restart: unless-stopped
+    cap_add:
+      - NET_RAW
+    environment:
+      VEYDECK_NETWORK_MODE: bridge
+    labels:
+      veydeck.owner: suite
+      veydeck.suite.id: veydeck.host-scanner
+      veydeck.service.role: web
+    expose:
+      - "8080"
+    networks:
+      - veydeck-suite-network
+    volumes:
+      - veydeck-host-scanner-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
+
+volumes:
+  veydeck-host-scanner-data:
+    name: veydeck-host-scanner-data
+    labels:
+      veydeck.owner: suite
+
+networks:
+  veydeck-suite-network:
+    external: true
+    name: veydeck-suite-network
