@@ -15,6 +15,7 @@ on:
           - host-scanner
           - packet
           - protocol-simulation
+          - websites
 
 permissions:
   contents: write
@@ -33,9 +34,9 @@ jobs:
         run: |
           case "$RELEASE_SUITE" in
             all)
-              echo 'suites=["host-scanner","packet","protocol-simulation"]' >> "$GITHUB_OUTPUT"
+              echo 'suites=["host-scanner","packet","protocol-simulation","websites"]' >> "$GITHUB_OUTPUT"
               ;;
-            host-scanner|packet|protocol-simulation)
+            host-scanner|packet|protocol-simulation|websites)
               echo "suites=[\"$RELEASE_SUITE\"]" >> "$GITHUB_OUTPUT"
               ;;
             *)
@@ -70,6 +71,9 @@ jobs:
               ;;
             protocol-simulation)
               SUITE_DIR="suites/veydeck.protocol-simulation"
+              ;;
+            websites)
+              SUITE_DIR="suites/veydeck.websites"
               ;;
             *)
               echo "Unsupported suite: $RELEASE_SUITE"

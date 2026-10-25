@@ -1,0 +1,49 @@
+apiVersion: veydeck.io/v1alpha1
+kind: ComposeSuite
+metadata:
+  suiteId: veydeck.websites
+  slug: websites
+  version: 0.1.0-alpha.1
+  minVeydeckVersion: 0.1.0-alpha.1
+  name: 网站管理
+  summary: 部署静态网站与反向代理，提供证书管理、网站目录导航和独立日志。
+  icon: assets/suite-icon.png
+  category: tools
+compatibility:
+  platformContractVersion: 1
+runtime:
+  type: compose
+  composeFile: compose.yaml
+  projectNameTemplate: veydeck-{slug}
+  resources:
+    engineService: nginx
+    managerService: manager
+  agent:
+    services: [manager]
+    capabilities: [services.control, operation-logs.write]
+appEntries:
+  - id: main
+    title: 网站管理
+    type: proxied_web
+    service: manager
+    port: 8080
+    path: /
+    window: {width: 1280, height: 800, minWidth: 960, minHeight: 640}
+i18n:
+  defaultLocale: zh-CN
+  locales:
+    en-US:
+      metadata:
+        name: Website Manager
+        summary: Host static websites and reverse proxies with certificates, directory navigation and per-site logs.
+      appEntries:
+        main: {title: Website Manager}
+permissions:
+  network: {outbound: true}
+  volumes:
+    named: false
+    hostPaths:
+      - path: /opt/veydeck/data/www/websites
+        mode: rw
+        reason: 保存网站 index 目录、证书、数据库与运行配置。
+  dangerous: {privileged: false, hostNetwork: true, dockerSocket: false}
