@@ -27,7 +27,7 @@ suites/<suiteId>/
 | --- | --- | --- |
 | `veydeck.host-scanner` | `tools` | 网段主机扫描和常用端口探测。 |
 | `veydeck.packet` | `tools` | PCAP 流量解析、统计展示和数据包构造。 |
-| `veydeck.protocol-simulation` | `tools` | 通过受控规则容器部署协议仿真实例，并查看状态与审计事件。 |
+| `veydeck.protocol-simulation` | `tools` | 仿真 19 种协议的握手、服务身份与探测响应，并查看审计事件与整实例抓包。 |
 
 ## 套件包
 

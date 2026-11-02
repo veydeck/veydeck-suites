@@ -3,9 +3,9 @@ kind: ComposeSuite
 metadata:
   suiteId: veydeck.protocol-simulation
   slug: protocol-simulation
-  version: 0.1.0-alpha.1
+  version: 0.1.0-alpha.2
   name: 协议仿真
-  summary: 通过受控多端点工作负载部署 19 种协议仿真实例，并集中查看审计事件与整实例抓包。
+  summary: 仿真 19 种协议的握手、服务身份与探测响应，集中查看审计事件与整实例抓包。
   icon: assets/suite-icon.png
   minVeydeckVersion: 0.1.0-alpha.1
   category: tools
@@ -18,7 +18,7 @@ runtime:
   composeFile: compose.yaml
   projectNameTemplate: veydeck-{slug}
   images:
-    - veydeck/protocol-simulation-engine:0.1.0-alpha.1
+    - veydeck/protocol-simulation-engine:0.1.0-alpha.2
   network:
     name: veydeck-suite-network
     external: true
@@ -57,7 +57,7 @@ i18n:
     en-US:
       metadata:
         name: Protocol Simulation
-        summary: Deploy controlled multi-endpoint simulations for 19 protocols with audit events and whole-workload capture.
+        summary: Simulate handshakes, service identities, and discovery responses for 19 protocols with audit events and whole-workload capture.
       appEntries:
         main:
           title: Protocol Simulation
