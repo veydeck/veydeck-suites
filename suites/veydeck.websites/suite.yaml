@@ -3,7 +3,7 @@ kind: ComposeSuite
 metadata:
   suiteId: veydeck.websites
   slug: websites
-  version: 0.1.0-alpha.1
+  version: 0.1.0-alpha.2
   minVeydeckVersion: 0.1.0-alpha.1
   name: 网站管理
   summary: 部署静态网站与反向代理，提供证书管理、网站目录导航和独立日志。
