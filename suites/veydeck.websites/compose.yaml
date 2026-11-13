@@ -1,7 +1,7 @@
 services:
   manager:
     image: veydeck/website-manager:0.1.0-alpha.1
-    restart: unless-stopped
+    restart: "no"
     environment:
       VEYDECK_WEBSITE_DATA_DIR: /data
       VEYDECK_SUITE_INSTANCE_ID: ${VEYDECK_SUITE_INSTANCE_ID:-00000000-0000-0000-0000-000000000001}
@@ -27,7 +27,7 @@ services:
 
   nginx:
     image: nginx:1.30.6-trixie
-    restart: unless-stopped
+    restart: "no"
     network_mode: host
     read_only: true
     ulimits:

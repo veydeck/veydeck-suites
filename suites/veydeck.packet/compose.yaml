@@ -2,7 +2,7 @@ services:
   veydeck-packet:
     image: veydeck/packet:0.1.0-alpha.1
     container_name: veydeck-packet
-    restart: unless-stopped
+    restart: "no"
     labels:
       veydeck.owner: suite
       veydeck.suite.id: veydeck.packet

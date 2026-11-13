@@ -3,7 +3,7 @@ services:
     image: veydeck/protocol-simulation:0.1.0-alpha.2
     container_name: veydeck-protocol-simulation
     init: true
-    restart: unless-stopped
+    restart: "no"
     environment:
       PORT: "8080"
       VEYDECK_SUITE_DATA_DIR: /data

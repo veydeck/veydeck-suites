@@ -2,7 +2,7 @@ services:
   veydeck-host-scanner:
     image: veydeck/host-scanner:0.1.0-alpha.1
     container_name: veydeck-host-scanner
-    restart: unless-stopped
+    restart: "no"
     cap_add:
       - NET_RAW
     environment:

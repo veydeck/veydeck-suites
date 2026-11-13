@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 套件所有服务统一由 Agent 协调启动与恢复，停用后不会随 Docker 自动启动。
+
 ## [0.1.0-alpha.2] - 2026-11-02
 
 ### Changed
