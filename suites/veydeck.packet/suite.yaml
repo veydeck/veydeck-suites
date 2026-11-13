@@ -1,4 +1,3 @@
-apiVersion: veydeck.io/v1alpha1
 kind: ComposeSuite
 metadata:
   suiteId: veydeck.packet
