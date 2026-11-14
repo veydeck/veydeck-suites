@@ -2,7 +2,7 @@ kind: ComposeSuite
 metadata:
   suiteId: veydeck.packet
   slug: packet
-  version: 0.1.0-alpha.1
+  version: 0.1.0-alpha.2
   name: 流量解析
   summary: 提供在线 PCAP 流量流式解析、协议字段级展示、流量统计图表，以及可视化自定义数据包构造与导出。
   icon: assets/suite-icon.png

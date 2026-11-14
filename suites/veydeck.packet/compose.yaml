@@ -1,6 +1,6 @@
 services:
   veydeck-packet:
-    image: veydeck/packet:0.1.0-alpha.1
+    image: veydeck/packet:0.1.0-alpha.2
     container_name: veydeck-packet
     restart: "no"
     labels:
